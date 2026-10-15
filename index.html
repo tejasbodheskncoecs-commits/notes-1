@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CDAC DBT Session 11 — Flow Control Statements</title>
+<style>
+:root{
+  --bg:#f6f7fb; --surface:#ffffff; --surface2:#f0f3f9; --text:#1b2333; --muted:#5d6779;
+  --accent:#4f46e5; --accent2:#0ea5a4; --ok:#16a34a; --bad:#dc2626; --warn:#f59e0b;
+  --code-bg:#0f172a; --code-text:#e2e8f0; --border:#e3e7ef; --shadow:0 6px 24px rgba(15,23,42,.07);
+  --radius:16px;
+}
+[data-theme="dark"]{
+  --bg:#0b1020; --surface:#131a2e; --surface2:#1a2340; --text:#e6ebf5; --muted:#9aa6bf;
+  --accent:#818cf8; --accent2:#2dd4bf; --border:#26304d; --shadow:0 6px 24px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;font-size:16px}
+.topbar{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.topbar-in{max-width:1200px;margin:auto;display:flex;align-items:center;gap:14px;padding:12px 18px}
+.brand{font-weight:800;letter-spacing:-.2px;display:flex;align-items:center;gap:10px}
+.logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;color:#fff;font-weight:800;font-size:13px}
+.search{flex:1;max-width:420px;position:relative;margin-left:auto}
+.search input{width:100%;padding:10px 14px 10px 38px;border-radius:12px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font:inherit;outline:none}
+.search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
+.search::before{content:"⌕";position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:18px}
+.iconbtn{border:1px solid var(--border);background:var(--surface2);color:var(--text);border-radius:12px;padding:9px 12px;cursor:pointer;font:inherit}
+.iconbtn:hover{border-color:var(--accent)}
+.wrap{max-width:1200px;margin:auto;display:grid;grid-template-columns:240px 1fr;gap:28px;padding:24px 18px 80px}
+nav.side{position:sticky;top:84px;align-self:start}
+nav.side a{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:12px;color:var(--muted);text-decoration:none;font-weight:600;font-size:14.5px;margin-bottom:4px}
+nav.side a:hover,nav.side a.active{background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
+nav.side .count{font-size:12px;background:var(--surface2);padding:2px 8px;border-radius:999px}
+.progress-card{margin-top:18px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+.bar{height:8px;background:var(--surface2);border-radius:999px;overflow:hidden;margin-top:8px}
+.bar>div{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .4s}
+main{min-width:0}
+.hero{background:linear-gradient(135deg,#4f46e5,#0ea5a4);color:#fff;border-radius:22px;padding:34px;box-shadow:var(--shadow)}
+.hero h1{margin:0 0 8px;font-size:clamp(24px,4vw,36px);letter-spacing:-.6px}
+.hero p{margin:0;opacity:.92;max-width:680px}
+.hero .chips{margin-top:18px;display:flex;flex-wrap:wrap;gap:8px}
+.hero .chip{background:rgba(255,255,255,.18);padding:6px 12px;border-radius:999px;font-size:13px}
+section.part{margin-top:44px;scroll-margin-top:84px}
+section.part>h2{font-size:24px;letter-spacing:-.4px;margin:0 0 6px}
+.lead{color:var(--muted);margin:0 0 18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.card h3{margin:0;font-size:18px;font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;color:var(--accent)}
+.tag{font-size:11px;text-transform:uppercase;letter-spacing:.6px;padding:3px 8px;border-radius:999px;background:var(--surface2);color:var(--muted);font-weight:700}
+.card p{margin:0;font-size:14.5px;color:var(--muted)}
+.card p b{color:var(--text)}
+.full{grid-column:1/-1}
+pre{margin:0;background:var(--code-bg);color:var(--code-text);padding:12px 14px;border-radius:12px;overflow-x:auto;font:13px/1.6 "JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;position:relative;white-space:pre}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{border-radius:10px;padding:8px 12px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.out{background:color-mix(in srgb,var(--ok) 12%,var(--surface));border:1px solid color-mix(in srgb,var(--ok) 40%,transparent);border-radius:12px;padding:10px 12px;font:13.5px "JetBrains Mono",ui-monospace,monospace;color:var(--text);white-space:pre-wrap}
+.tip{font-size:13.5px;background:color-mix(in srgb,var(--warn) 14%,var(--surface));border-left:3px solid var(--warn);padding:8px 12px;border-radius:10px;color:var(--text)}
+.learned{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer;user-select:none}
+.learned input{accent-color:var(--ok);width:16px;height:16px}
+.hide{display:none!important}
+.copy{position:absolute;top:8px;right:8px;font-size:11px;padding:4px 8px;border-radius:8px;border:1px solid #334155;background:#1e293b;color:#cbd5e1;cursor:pointer}
+.copy:hover{color:#fff}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px}
+.slider-row{display:flex;align-items:center;gap:14px;margin:10px 0}
+input[type=range]{flex:1;accent-color:var(--accent)}
+select{padding:9px 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font:inherit}
+.ladder{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}
+.rung{padding:12px 8px;border-radius:12px;border:1px solid var(--border);background:var(--surface2);text-align:center;font-size:13.5px;transition:all .25s}
+.rung small{display:block;color:var(--muted);font-family:"JetBrains Mono",monospace;font-size:12px}
+.rung.hit{background:color-mix(in srgb,var(--ok) 18%,var(--surface));border-color:var(--ok);font-weight:700}
+.rung.skip{opacity:.5}
+.result{font-size:24px;font-weight:800;margin-top:6px}
+.trace{background:var(--code-bg);color:var(--code-text);border-radius:12px;padding:12px 14px;font:13px/1.7 "JetBrains Mono",ui-monospace,monospace;min-height:150px;max-height:260px;overflow:auto;white-space:pre-wrap}
+.trace .now{color:#fde047}
+.vars{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+.var{padding:8px 14px;border-radius:12px;background:var(--surface2);border:1px solid var(--border);font-family:"JetBrains Mono",monospace;font-size:14px}
+.var b{color:var(--accent)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:9px 10px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
+th{background:var(--surface2);font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.tablewrap{overflow-x:auto;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+.q{padding:4px 0}
+.q h4{margin:0 0 10px;font-size:16px;line-height:1.5}
+.opts{display:grid;gap:8px}
+.opt{text-align:left;padding:11px 14px;border-radius:12px;border:1px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer;font:inherit}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt.right{background:color-mix(in srgb,var(--ok) 18%,var(--surface));border-color:var(--ok)}
+.opt.wrong{background:color-mix(in srgb,var(--bad) 16%,var(--surface));border-color:var(--bad)}
+.opt:disabled{cursor:default}
+.feedback{font-size:14px;margin-top:8px;color:var(--muted);min-height:20px}
+.score{font-size:28px;font-weight:800;margin-top:12px}
+footer{margin-top:60px;color:var(--muted);font-size:13px;text-align:center}
+@media (max-width:900px){
+  .wrap{grid-template-columns:1fr}
+  nav.side{position:static;display:flex;overflow-x:auto;gap:6px;padding-bottom:6px}
+  nav.side a{white-space:nowrap;margin:0}
+  .progress-card,.search{display:none}
+  .ladder{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="brand"><div class="logo">FC</div><span>CDAC DBT · Session 11</span></div>
+    <div class="search"><input id="q" type="search" placeholder="Search IF, LOOP, WHILE, REPEAT…" aria-label="Search"></div>
+    <button class="iconbtn" id="theme" title="Toggle dark mode">🌙</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <nav class="side">
+    <a href="#basics">Flow control basics</a>
+    <a href="#decisions">Decisions <span class="count">IF · CASE</span></a>
+    <a href="#loops">Loops <span class="count">LOOP · WHILE · REPEAT</span></a>
+    <a href="#control">LEAVE · ITERATE · Procedures</a>
+    <a href="#compare">Compare loops</a>
+    <a href="#quiz">Quiz <span class="count">45</span></a>
+    <a href="#revision">Revision</a>
+    <div class="progress-card">
+      <div style="font-weight:700;font-size:14px">Your progress</div>
+      <div style="font-size:13px;color:var(--muted)" id="ptext">0 of 11 topics marked learned</div>
+      <div class="bar"><div id="pbar"></div></div>
+    </div>
+  </nav>
+
+  <main>
+    <div class="hero">
+      <h1>Flow Control in MySQL</h1>
+      <p>Decide what runs with IF and CASE, repeat work with LOOP, WHILE and REPEAT, and control loops with LEAVE and ITERATE. Use the live checker and loop stepper to see each step.</p>
+      <div class="chips"><span class="chip">11 topics</span><span class="chip">Live grade checker</span><span class="chip">Loop stepper</span><span class="chip">45-question quiz</span></div>
+    </div>
+
+    <section class="part" id="basics">
+      <h2>Flow control basics</h2>
+      <p class="lead">Flow control decides which statements run, and how many times they run, inside a stored procedure.</p>
+      <div class="grid">
+        <div class="card"><div class="card-head"><h3>Decision</h3><span class="tag">choose</span></div><p><b>IF, IF-ELSE, CASE.</b> Example: check whether marks are a pass or a fail.</p></div>
+        <div class="card"><div class="card-head"><h3>Repetition</h3><span class="tag">repeat</span></div><p><b>LOOP, WHILE, REPEAT.</b> Example: print the numbers 1 to 5.</p></div>
+      </div>
+    </section>
+
+    <section class="part" id="decisions">
+      <h2>Decisions: IF and CASE</h2>
+      <p class="lead">Try the live checker first, then read the cards.</p>
+      <div class="panel" style="margin-bottom:16px">
+        <div class="row" style="justify-content:space-between"><b>Marks checker (IF-ELSEIF ladder)</b><span id="gm" style="font-family:'JetBrains Mono',monospace;font-weight:700">m = 65</span></div>
+        <div class="slider-row"><input type="range" id="marks" min="0" max="100" value="65"></div>
+        <div class="ladder" id="ladder">
+          <div class="rung" data-min="75"><small>m &gt;= 75</small>Distinction</div>
+          <div class="rung" data-min="60"><small>m &gt;= 60</small>First Class</div>
+          <div class="rung" data-min="40"><small>m &gt;= 40</small>Pass</div>
+          <div class="rung" data-min="0"><small>ELSE</small>Fail</div>
+        </div>
+        <div class="row"><span>Result:</span><span class="result" id="gres">First Class</span></div>
+        <div class="row" style="margin-top:12px"><label class="learned"><input type="checkbox" id="wrongOrder"> Show the mistake: check m &gt;= 40 first</label></div>
+        <p id="wrongNote" class="hide" style="font-size:14px;color:var(--bad);margin:8px 0 0"></p>
+      </div>
+      <div class="grid" id="grid-decisions"></div>
+    </section>
+
+    <section class="part" id="loops">
+      <h2>Repetition: LOOP, WHILE and REPEAT</h2>
+      <p class="lead">Each loop prints i from 1 to 5. Choose a starting value, then press Step to watch each loop check its condition.</p>
+      <div class="panel" style="margin-bottom:16px">
+        <div class="row" style="justify-content:space-between;align-items:center">
+          <div class="row"><b>Start with i =</b>
+            <select id="startI"><option value="1">1 (normal)</option><option value="6">6 (try the difference)</option></select>
+          </div>
+          <div class="row">
+            <button class="btn" id="stepBtn">Step ▶</button>
+            <button class="btn" id="autoBtn">Auto ▶▶</button>
+            <button class="btn" id="resetBtn">Reset</button>
+          </div>
+        </div>
+        <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(230px,1fr));margin-top:14px">
+          <div><div class="row" style="justify-content:space-between"><b>LOOP</b><span class="tag">exit with LEAVE</span></div><div class="trace" id="tr-loop"></div></div>
+          <div><div class="row" style="justify-content:space-between"><b>WHILE</b><span class="tag">check first</span></div><div class="trace" id="tr-while"></div></div>
+          <div><div class="row" style="justify-content:space-between"><b>REPEAT</b><span class="tag">work first</span></div><div class="trace" id="tr-repeat"></div></div>
+        </div>
+        <p id="loopSummary" style="margin:12px 0 0;font-size:14.5px;color:var(--muted)"></p>
+      </div>
+      <div class="grid" id="grid-loops"></div>
+    </section>
+
+    <section class="part" id="control">
+      <h2>LEAVE, ITERATE and stored procedures</h2>
+      <div class="grid" id="grid-control"></div>
+    </section>
+
+    <section class="part" id="compare">
+      <h2>LOOP vs WHILE vs REPEAT</h2>
+      <div class="tablewrap">
+        <table>
+          <tr><th>Feature</th><th>LOOP</th><th>WHILE</th><th>REPEAT</th></tr>
+          <tr><td>Main purpose</td><td>Repeat until explicitly exited</td><td>Repeat while condition is TRUE</td><td>Repeat until condition is TRUE</td></tr>
+          <tr><td>Condition built into loop?</td><td>No</td><td>Yes</td><td>Yes, through UNTIL</td></tr>
+          <tr><td>Condition checked</td><td>Depends on code inside</td><td>Before the body</td><td>After the body</td></tr>
+          <tr><td>Can run zero times?</td><td>Normally enters the body</td><td>Yes</td><td>No (always at least once)</td></tr>
+          <tr><td>Stopping mechanism</td><td>Usually LEAVE</td><td>Condition becomes FALSE</td><td>UNTIL becomes TRUE</td></tr>
+          <tr><td>Closing syntax</td><td>END LOOP</td><td>END WHILE</td><td>END REPEAT</td></tr>
+        </table>
+      </div>
+      <p class="lead" style="margin-top:14px"><b>Memory trick:</b> LOOP = explicit exit. WHILE = check first. REPEAT = work first.</p>
+    </section>
+
+    <section class="part" id="quiz">
+      <h2>Quiz</h2>
+      <p class="lead">45 questions on IF, CASE, loops, LEAVE, ITERATE and procedures. Options and order are shuffled each time.</p>
+      <div class="panel" id="quizbox"></div>
+    </section>
+
+    <section class="part" id="revision">
+      <h2>Revision: common mistakes</h2>
+      <div class="grid">
+        <div class="card"><h3>Missing END</h3><p>Forgetting <b>END IF</b>, <b>END LOOP</b>, <b>END WHILE</b> or <b>END REPEAT</b> is the most common syntax error.</p></div>
+        <div class="card"><h3>Missing DO</h3><p>A WHILE loop needs <b>DO</b>: <b>WHILE i &lt;= 5 DO</b>.</p></div>
+        <div class="card"><h3>No counter update</h3><p>If you never run <b>SET i = i + 1</b>, the loop may never end.</p></div>
+        <div class="card"><h3>WHILE vs REPEAT</h3><p>WHILE continues while the condition is TRUE. REPEAT stops when UNTIL is TRUE.</p></div>
+        <div class="card"><h3>ELSEIF order</h3><p>The first TRUE branch runs. Put the highest range first, or 80 marks will match the Pass branch.</p></div>
+        <div class="card"><h3>Forgot CALL</h3><p>Creating a procedure does not run it. Use <b>CALL procedure_name();</b>.</p></div>
+      </div>
+      <div class="tablewrap" style="margin-top:16px">
+        <table>
+          <tr><th>Question</th><th>Answer</th></tr>
+          <tr><td>Which statement makes a decision?</td><td>IF / CASE</td></tr>
+          <tr><td>Which statement handles two alternatives?</td><td>IF-ELSE</td></tr>
+          <tr><td>Which CASE form matches fixed values?</td><td>Simple CASE</td></tr>
+          <tr><td>Which loop checks before executing?</td><td>WHILE</td></tr>
+          <tr><td>Which loop checks after executing?</td><td>REPEAT</td></tr>
+          <tr><td>Which loop usually needs explicit LEAVE?</td><td>LOOP</td></tr>
+          <tr><td>Which statement exits a loop?</td><td>LEAVE</td></tr>
+          <tr><td>Which statement skips to the next iteration?</td><td>ITERATE</td></tr>
+          <tr><td>How do you run a stored procedure?</td><td>CALL procedure_name();</td></tr>
+        </table>
+      </div>
+      <p class="lead" style="margin-top:14px"><b>Final rule:</b> decision statements choose what happens. Loops repeat work. LEAVE exits; ITERATE skips to the next iteration.</p>
+    </section>
+
+    <footer>CDAC DBT — Session 11 · MySQL 8.0 syntax · Based on the DBT Session 11 revision notes</footer>
+  </main>
+</div>
+<script>
+const QUIZ_RAW=[
+["Output of CALL check_marks(75) when the procedure has only IF m >= 40 THEN SELECT 'PASS'?",["PASS","FAIL","Nothing","Error"],0,"75 >= 40 is TRUE, so 'PASS' is selected."],
+["Same procedure (IF only, no ELSE), called with 30. What is displayed?",["FAIL","PASS","Nothing","Error"],2,"The condition is FALSE and there is no ELSE branch, so nothing runs."],
+["Which keyword adds an alternative condition inside IF in MySQL?",["ELSE IF","ELSEIF","ELIF","SWITCH"],1,"MySQL uses ELSEIF (one word). ELSE IF creates a nested IF instead."],
+["With the grade ladder (>=75 Distinction, >=60 First Class, >=40 Pass, ELSE Fail), what does m = 65 give?",["Distinction","First Class","Pass","Fail"],1,"65 >= 75 is FALSE, 65 >= 60 is TRUE, so 'First Class'."],
+["With the same ladder, what does m = 40 give?",["Distinction","First Class","Pass","Fail"],2,"40 is not >= 75 or >= 60, but it is >= 40, so 'Pass'."],
+["A ladder checks m >= 40 first, then m >= 75. What does m = 80 give?",["Distinction","Pass","Fail","Error"],1,"The first TRUE branch runs. 80 >= 40 is TRUE, so 'Pass' is shown and Distinction never runs."],
+["Which statement ends a simple CASE block inside a procedure?",["END","END IF","END CASE","STOP CASE"],2,"Every CASE block ends with END CASE."],
+["Which of these is NOT a MySQL stored procedure flow control construct?",["IF","CASE","SWITCH","WHILE"],2,"MySQL has no SWITCH statement. It uses CASE."],
+["Which CASE form compares one expression with fixed values?",["Searched CASE","Simple CASE","Nested CASE","Loop CASE"],1,"Simple CASE compares one expression (such as grade) with values like 'A' and 'B'."],
+["CASE grade with WHEN 'A', WHEN 'B' and ELSE 'Invalid grade'. What does grade = 'Z' give?",["Error","Invalid grade","Nothing","Z"],1,"No WHEN matches, so the ELSE branch runs."],
+["How many branches of an IF-ELSE run for any single input?",["All of them","Exactly one","Zero or one","Two"],1,"IF-ELSE chooses one path. Only one branch executes."],
+["In an IF-ELSEIF-ELSE chain, which branch runs first?",["The last branch","The first TRUE branch from the top","The ELSE branch","All TRUE branches"],1,"Conditions are checked top to bottom. The first TRUE branch executes and the rest are skipped."],
+["What does the procedure print_loop (LOOP that exits when i > 5, starting at 1) display?",["1 to 4","1 to 5","1 to 6","1 only"],1,"It displays 1 through 5, then sets i to 6 and LEAVEs."],
+["After print_loop finishes, what is the final value of i?",["5","6","1","0"],1,"The loop increments i to 6 before checking i > 5, so i ends as 6."],
+["Which loop does NOT have a built-in condition in its header?",["WHILE","REPEAT","LOOP","None of them"],2,"A basic LOOP has no condition, so it needs LEAVE inside the body to stop."],
+["Why can a basic LOOP become an infinite loop?",["It has no exit path","It uses DELIMITER","It needs a SELECT","It cannot use integers"],0,"Without LEAVE or a condition that ends it, the loop never stops."],
+["A WHILE loop starts with i = 6 and the condition is i <= 5. How many times does the body run?",["0","1","5","Infinite"],0,"WHILE checks the condition first. 6 <= 5 is FALSE, so the body runs zero times."],
+["A REPEAT loop starts with i = 6 and stops at UNTIL i > 5. How many times does the body run?",["0","1","5","Infinite"],1,"REPEAT runs the body first. It displays 6, increments to 7, then 7 > 5 is TRUE, so it stops after one run."],
+["Which loop is guaranteed to run at least once?",["WHILE","REPEAT","Both of them","Neither"],1,"REPEAT checks its UNTIL condition after the body."],
+["Which loop checks its condition before every run of the body?",["LOOP","WHILE","REPEAT","CASE"],1,"WHILE checks before the body. REPEAT checks after."],
+["Which loop stops when its UNTIL condition becomes TRUE?",["WHILE","LOOP","REPEAT","IF"],2,"REPEAT ... UNTIL condition stops once the condition is TRUE."],
+["Which loop keeps running while its condition is TRUE?",["REPEAT","WHILE","LOOP","CASE"],1,"WHILE continues while its condition is TRUE and stops when it becomes FALSE."],
+["What is the correct closing line for a WHILE loop?",["END LOOP","END WHILE","END REPEAT","ENDWHILE"],1,"WHILE blocks close with END WHILE."],
+["What is the correct closing line for a REPEAT loop?",["END REPEAT","END WHILE","END LOOP","END CASE"],0,"REPEAT blocks close with END REPEAT, which follows the UNTIL condition."],
+["Which keyword is required before the body of a WHILE loop?",["THEN","DO","BEGIN","LOOP"],1,"Write WHILE condition DO, then the statements."],
+["Which label syntax is correct for a loop?",["myloop LOOP:","myloop: LOOP","LOOP myloop:","label myloop LOOP"],1,"The label comes first, followed by a colon, then the loop keyword."],
+["Which statement exits a named loop completely?",["EXIT","BREAK","LEAVE","STOP"],2,"LEAVE label exits the loop. BREAK and EXIT are not MySQL statements."],
+["Which statement skips the rest of the current iteration and continues with the next?",["LEAVE","ITERATE","CONTINUE","SKIP"],1,"ITERATE jumps to the start of the next iteration. MySQL uses ITERATE, not CONTINUE."],
+["In a loop, the code runs IF i = 3, THEN SET i = i + 1 and ITERATE. What is the purpose of SET here?",["To stop the loop","To avoid repeating the same check","To declare a variable","To close the procedure"],1,"Changing i before ITERATE prevents the same condition from being met again and again."],
+["ITERATE is used without updating the counter. What is the likely result?",["Output is faster","Infinite loop","Error at compile","Nothing changes"],1,"If the counter never changes, the same condition keeps being met and the loop can run forever."],
+["What does DECLARE i INT DEFAULT 1 do?",["Creates a table","Declares an integer variable starting at 1","Calls a procedure","Ends a loop"],1,"DECLARE creates a local variable. DEFAULT 1 sets its starting value."],
+["What does SET i = i + 1 do?",["Compares i with 1","Adds 1 to i and stores the result","Deletes i","Creates a new variable"],1,"SET assigns a new value. Here it takes the old value of i, adds 1, and stores it."],
+["What does the DELIMITER // command do?",["Creates a loop","Changes the statement terminator temporarily","Calls a procedure","Deletes a procedure"],1,"It lets semicolons inside the procedure body stay part of the CREATE statement."],
+["Which statement runs a stored procedure named print_loop?",["RUN print_loop;","CALL print_loop();","EXECUTE print_loop;","START print_loop;"],1,"CALL is the statement used to run a stored procedure."],
+["Which keyword starts a stored procedure definition?",["FUNCTION","CREATE PROCEDURE","NEW PROCEDURE","DEFINE PROCEDURE"],1,"CREATE PROCEDURE name() BEGIN ... END defines a stored procedure."],
+["In CREATE PROCEDURE check_marks(IN m INT), what does IN mean?",["Input parameter","Output parameter","Local variable","Loop label"],0,"IN means the value is passed into the procedure."],
+["Which statement prints a value from inside a procedure?",["PRINT","SELECT","ECHO","DISPLAY"],1,"SELECT returns a value as a result set."],
+["Which is the correct WHILE syntax?",["WHILE condition THEN ... END WHILE;","WHILE condition DO ... END WHILE;","WHILE condition ... END;","WHILE (condition) LOOP ... END LOOP;"],1,"WHILE condition DO ... END WHILE; is the correct structure."],
+["Which is the correct REPEAT syntax?",["REPEAT ... WHILE cond END REPEAT;","REPEAT ... UNTIL cond END REPEAT;","REPEAT ... UNTIL cond END LOOP;","REPEAT ... END REPEAT cond;"],1,"REPEAT body UNTIL condition END REPEAT; is correct."],
+["Which loop type is the best fit when you want to repeat until a condition is met AND the body must run first?",["WHILE","REPEAT","LOOP","CASE"],1,"REPEAT runs the body first and then checks UNTIL."],
+["Which statement is used when the number of repetitions is not known, and the exit depends on code inside the body?",["WHILE with no condition","LOOP with LEAVE","CASE","IF only"],1,"LOOP with LEAVE works when the exit point is decided inside the body."],
+["What is the value of i after the WHILE loop (i <= 5) ends, starting at 1?",["5","6","4","1"],1,"After displaying 5, i becomes 6. 6 <= 5 is FALSE, so the loop stops with i = 6."],
+["A procedure is created but never called. What happens?",["It runs automatically","Nothing runs","It gives an error","It runs once"],1,"A stored procedure only runs when you CALL it."]
+,["In a searched CASE with WHEN m >= 75, WHEN m >= 40 and ELSE 'Fail', what does m = 40 return?",["Distinction","Pass","Fail","Nothing"],1,"40 fails the first test (>= 75) but passes the second (>= 40), so 'Pass'."],
+["What does the ELSE branch of a CASE block do?",["Runs when no WHEN condition matches","Always runs first","Repeats the block","Closes the procedure"],0,"ELSE is the fallback. It runs only when none of the WHEN branches match."]
+];
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const CARDS=[
+ {id:"if",cat:"decisions",t:"IF",tag:"one condition",m:"Runs statements only when a condition is TRUE. No ELSE unless you add one.",s:"IF condition THEN\n    statements;\nEND IF;",
+  c:"DELIMITER //\nCREATE PROCEDURE check_marks(IN m INT)\nBEGIN\n    IF m >= 40 THEN\n        SELECT 'PASS' AS result;\n    END IF;\nEND //\nDELIMITER ;\n\nCALL check_marks(75);",
+  o:"PASS   (with m = 30, the block is skipped and nothing is shown)",tip:"IF has no ELSE branch unless you explicitly add one."},
+ {id:"ifelse",cat:"decisions",t:"IF-ELSE / ELSEIF",tag:"two or more paths",m:"Chooses one path. ELSEIF checks more conditions from top to bottom; the first TRUE branch runs.",s:"IF cond1 THEN ...\nELSEIF cond2 THEN ...\nELSE ...\nEND IF;",
+  c:"IF m >= 75 THEN\n    SELECT 'Distinction';\nELSEIF m >= 60 THEN\n    SELECT 'First Class';\nELSEIF m >= 40 THEN\n    SELECT 'Pass';\nELSE\n    SELECT 'Fail';\nEND IF;",
+  o:"m = 65 → First Class",tip:"Put the highest range first. Checking m >= 40 first would make 80 marks show 'Pass'."},
+ {id:"simplecase",cat:"decisions",t:"Simple CASE",tag:"fixed values",m:"Compares one expression with fixed values, such as grade letters.",s:"CASE expression\n    WHEN value THEN statements;\n    ELSE statements;\nEND CASE;",
+  c:"CASE grade\n    WHEN 'A' THEN SELECT 'Excellent';\n    WHEN 'B' THEN SELECT 'Good';\n    WHEN 'C' THEN SELECT 'Average';\n    ELSE SELECT 'Invalid grade';\nEND CASE;",
+  o:"grade = 'B' → Good",tip:"MySQL uses CASE. It has no SWITCH statement."},
+ {id:"searchedcase",cat:"decisions",t:"Searched CASE",tag:"conditions",m:"Checks a condition in each WHEN. Use it when the test is a range or a comparison.",s:"CASE\n    WHEN condition THEN statements;\n    ELSE statements;\nEND CASE;",
+  c:"CASE\n    WHEN m >= 75 THEN SELECT 'Distinction';\n    WHEN m >= 40 THEN SELECT 'Pass';\n    ELSE SELECT 'Fail';\nEND CASE;",
+  o:"m = 65 → Pass",tip:"If no WHEN matches and there is no ELSE, MySQL raises an error inside a procedure."},
+ {id:"loop",cat:"loops",t:"LOOP",tag:"explicit exit",m:"Repeats until you explicitly exit with LEAVE. It has no built-in condition.",s:"label: LOOP\n    statements;\n    IF exit_cond THEN\n        LEAVE label;\n    END IF;\nEND LOOP label;",
+  c:"DELIMITER //\nCREATE PROCEDURE print_loop()\nBEGIN\n    DECLARE i INT DEFAULT 1;\n    myloop: LOOP\n        SELECT i;\n        SET i = i + 1;\n        IF i > 5 THEN\n            LEAVE myloop;\n        END IF;\n    END LOOP myloop;\nEND //\nDELIMITER ;\n\nCALL print_loop();",
+  o:"1, 2, 3, 4, 5 (five separate result sets)",tip:"A basic LOOP without an exit path can run forever."},
+ {id:"while",cat:"loops",t:"WHILE",tag:"check first",m:"Repeats while the condition is TRUE. The check happens BEFORE each run, so the body may run zero times.",s:"WHILE condition DO\n    statements;\nEND WHILE;",
+  c:"DELIMITER //\nCREATE PROCEDURE print_while()\nBEGIN\n    DECLARE i INT DEFAULT 1;\n    WHILE i <= 5 DO\n        SELECT i;\n        SET i = i + 1;\n    END WHILE;\nEND //\nDELIMITER ;\n\nCALL print_while();",
+  o:"1, 2, 3, 4, 5",tip:"WHILE needs the keyword DO. Forgetting SET i = i + 1 creates an infinite loop."},
+ {id:"repeat",cat:"loops",t:"REPEAT",tag:"work first",m:"Runs the body first, then checks UNTIL. Stops when the UNTIL condition becomes TRUE. Always runs at least once.",s:"REPEAT\n    statements;\nUNTIL exit_condition\nEND REPEAT;",
+  c:"DELIMITER //\nCREATE PROCEDURE print_repeat()\nBEGIN\n    DECLARE i INT DEFAULT 1;\n    REPEAT\n        SELECT i;\n        SET i = i + 1;\n    UNTIL i > 5\n    END REPEAT;\nEND //\nDELIMITER ;\n\nCALL print_repeat();",
+  o:"1, 2, 3, 4, 5",tip:"Do not confuse it with WHILE. WHILE continues while TRUE; REPEAT stops when UNTIL is TRUE."},
+ {id:"leave",cat:"control",t:"LEAVE",tag:"exit loop",m:"Exits a named loop completely.",s:"LEAVE label;",
+  c:"IF i > 5 THEN\n    LEAVE myloop;\nEND IF;",o:"Execution jumps out of myloop",tip:"LEAVE is the way to stop a basic LOOP."},
+ {id:"iterate",cat:"control",t:"ITERATE",tag:"next iteration",m:"Skips the remaining statements in this pass and starts the next iteration.",s:"ITERATE label;",
+  c:"IF i = 3 THEN\n    SET i = i + 1;\n    ITERATE myloop;\nEND IF;",o:"i = 3 is skipped and the loop continues with i = 4",tip:"Update the counter before ITERATE, or the loop may repeat the same check forever."},
+ {id:"proc",cat:"control",t:"CREATE PROCEDURE and CALL",tag:"basics",m:"A stored procedure is a group of SQL statements stored in the database. Create it once, then run it with CALL.",s:"CREATE PROCEDURE name()\nBEGIN\n    -- statements\nEND;\n\nCALL name();",
+  c:"DECLARE i INT DEFAULT 1;   -- local variable starting at 1\nSET i = i + 1;              -- assign a new value",o:"Creating a procedure does not run it. You must CALL it.",tip:"Use a different procedure name for each example, or DROP PROCEDURE before recreating it."},
+ {id:"delim",cat:"control",t:"DELIMITER",tag:"client setting",m:"Temporarily changes the statement terminator so the semicolons inside the procedure body are not treated as the end of the CREATE statement.",s:"DELIMITER //\n... CREATE PROCEDURE ... END //\nDELIMITER ;",
+  c:"DELIMITER //\n-- write the whole procedure here\nDELIMITER ;",o:"No output. It only changes how the client reads your script.",tip:"Always switch back with DELIMITER ; after the procedure."}
+];
+const grid=(cat,id)=>{document.getElementById(id).innerHTML=CARDS.filter(c=>c.cat===cat).map((c,i)=>`
+ <article class="card ${c.cat==='control'&&c.id==='proc'?'full':''}" data-search="${esc((c.t+' '+c.m+' '+c.s).toLowerCase())}">
+  <div class="card-head"><h3>${esc(c.t)}</h3><span class="tag">${esc(c.tag)}</span></div>
+  <p>${esc(c.m)}</p>
+  <pre><code id="code-${c.id}">${esc(c.c)}</code><button class="copy" data-copy="code-${c.id}">Copy</button></pre>
+  <div class="out"><b>Output:</b> ${esc(c.o)}</div>
+  <p><b>Syntax:</b></p><pre style="font-size:12px">${esc(c.s)}</pre>
+  <div class="row"><label class="learned"><input type="checkbox" data-learn="${c.id}"> Mark learned</label></div>
+  <div class="tip">💡 ${esc(c.tip)}</div>
+ </article>`).join('');};
+grid("decisions","grid-decisions");
+grid("loops","grid-loops");
+grid("control","grid-control");
+
+/* ---- grade checker ---- */
+const marks=document.getElementById("marks");
+function gradeCheck(){
+  const m=+marks.value, wrong=document.getElementById("wrongOrder").checked;
+  document.getElementById("gm").textContent="m = "+m;
+  const rungs=[...document.querySelectorAll("#ladder .rung")];
+  const ladder=wrong?[{min:40,l:"Pass"},{min:75,l:"Distinction"},{min:60,l:"First Class"},{min:-1,l:"Fail"}]
+                     :[{min:75,l:"Distinction"},{min:60,l:"First Class"},{min:40,l:"Pass"},{min:-1,l:"Fail"}];
+  let hit=null;
+  for(const r of ladder){ if(hit===null && (r.min===-1 || m>=r.min)) hit=r; }
+  rungs.forEach((el,i)=>{
+    const r=ladder[i];
+    el.innerHTML=`<small>${r.min===-1?'ELSE':'m &gt;= '+r.min}</small>${r.l}`;
+    el.classList.toggle("hit", r===hit);
+    el.classList.toggle("skip", r!==hit);
+  });
+  document.getElementById("gres").textContent=hit.l;
+  const note=document.getElementById("wrongNote");
+  note.classList.toggle("hide",!wrong);
+  if(wrong) note.textContent="With this order, 80 marks shows "+ladder[0].l+" because the first TRUE branch wins. Correct order checks >= 75 first.";
+}
+marks.addEventListener("input",gradeCheck);
+document.getElementById("wrongOrder").addEventListener("change",gradeCheck);
+gradeCheck();
+
+/* ---- loop stepper: traces LOOP, WHILE, REPEAT ---- */
+function traceFor(start){
+  const L=[],W=[],R=[];
+  let i=start;
+  // LOOP: body runs first, then LEAVE check
+  L.push(`i = ${i}`);
+  for(let guard=0;guard<50;guard++){
+    L.push(`SELECT i → displays ${i}`);
+    i++; L.push(`SET i = ${i}`);
+    if(i>5){L.push(`IF ${i} > 5 → LEAVE  (done)`);break;}
+    L.push(`IF ${i} > 5 → FALSE, loop again`);
+  }
+  // WHILE: check first
+  i=start; W.push(`i = ${i}`);
+  for(let guard=0;guard<50;guard++){
+    const ok=i<=5;
+    W.push(`CHECK ${i} <= 5 → ${ok?'TRUE':'FALSE'}`);
+    if(!ok){W.push("Loop stops (body skipped)" + (start>5?" — zero runs":""));break;}
+    W.push(`SELECT i → displays ${i}`);
+    i++; W.push(`SET i = ${i}`);
+  }
+  // REPEAT: body first, then UNTIL check
+  i=start; R.push(`i = ${i}`);
+  for(let guard=0;guard<50;guard++){
+    R.push(`SELECT i → displays ${i}`);
+    i++; R.push(`SET i = ${i}`);
+    const done=i>5;
+    R.push(`UNTIL ${i} > 5 → ${done?'TRUE (stop)':'FALSE (repeat)'}`);
+    if(done)break;
+  }
+  return {L,W,R};
+}
+let steps={L:[],W:[],R:[]}, pos=0, timer=null;
+function buildTrace(){
+  const start=+document.getElementById("startI").value;
+  steps=traceFor(start); pos=0;
+  ["L","W","R"].forEach(k=>{document.getElementById({L:"tr-loop",W:"tr-while",R:"tr-repeat"}[k]).textContent="";});
+  document.getElementById("loopSummary").textContent="";
+  renderTrace();
+}
+function renderTrace(){
+  const map={L:"tr-loop",W:"tr-while",R:"tr-repeat"};
+  ["L","W","R"].forEach(k=>{
+    const lines=steps[k].slice(0,pos);
+    document.getElementById(map[k]).innerHTML=lines.map((t,idx)=>idx===lines.length-1?`<span class="now">${esc(t)}</span>`:esc(t)).join("\n");
+  });
+  const maxLen=Math.max(steps.L.length,steps.W.length,steps.R.length);
+  if(pos>=maxLen){
+    const start=+document.getElementById("startI").value;
+    document.getElementById("loopSummary").innerHTML = start===1
+      ? "All three print 1 to 5. Each loop ends with i = 6."
+      : "Start at 6: LOOP and REPEAT still run once (body first). WHILE checks 6 <= 5 first, so it runs zero times.";
+    stopAuto();
+  }
+}
+function stepOnce(){ const maxLen=Math.max(steps.L.length,steps.W.length,steps.R.length); if(pos<maxLen){pos++;renderTrace();} }
+function stopAuto(){ if(timer){clearInterval(timer);timer=null;document.getElementById("autoBtn").textContent="Auto ▶▶";} }
+document.getElementById("stepBtn").onclick=()=>{stopAuto();stepOnce();};
+document.getElementById("autoBtn").onclick=()=>{
+  if(timer){stopAuto();return;}
+  document.getElementById("autoBtn").textContent="Pause ❚❚";
+  timer=setInterval(stepOnce,600);
+};
+document.getElementById("resetBtn").onclick=()=>{stopAuto();buildTrace();};
+document.getElementById("startI").onchange=()=>{stopAuto();buildTrace();};
+buildTrace();
+
+/* ---- copy, learned, search, theme, nav ---- */
+document.addEventListener("click",e=>{
+  const c=e.target.closest("[data-copy]");
+  if(c){const txt=document.getElementById(c.dataset.copy).textContent;navigator.clipboard?.writeText(txt).catch(()=>{});c.textContent="Copied ✓";setTimeout(()=>c.textContent="Copy",1200);}
+});
+const learned=new Set(); const TOTAL=CARDS.length;
+document.addEventListener("change",e=>{
+  const l=e.target.closest("[data-learn]");
+  if(l){l.checked?learned.add(l.dataset.learn):learned.delete(l.dataset.learn);
+    document.getElementById("ptext").textContent=`${learned.size} of ${TOTAL} topics marked learned`;
+    document.getElementById("pbar").style.width=(learned.size/TOTAL*100)+"%";}
+});
+document.getElementById("q").addEventListener("input",e=>{
+  const v=e.target.value.trim().toLowerCase();
+  document.querySelectorAll("[data-search]").forEach(el=>el.classList.toggle("hide", v!=="" && !el.dataset.search.includes(v)));
+});
+document.getElementById("theme").addEventListener("click",()=>{
+  const dark=document.documentElement.getAttribute("data-theme")==="dark";
+  if(dark){document.documentElement.removeAttribute("data-theme");document.getElementById("theme").textContent="🌙";}
+  else{document.documentElement.setAttribute("data-theme","dark");document.getElementById("theme").textContent="☀️";}
+});
+const links=[...document.querySelectorAll("nav.side a")];
+const io=new IntersectionObserver(es=>{es.forEach(en=>{if(en.isIntersecting)links.forEach(a=>a.classList.toggle("active",a.getAttribute("href")==="#"+en.target.id));});},{rootMargin:"-40% 0px -55% 0px"});
+["basics","decisions","loops","control","compare","quiz","revision"].forEach(id=>io.observe(document.getElementById(id)));
+
+/* ---- quiz ---- */
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function prep(x){const order=shuffle(x[1].map((_,i)=>i));return {q:x[0],o:order.map(i=>x[1][i]),a:order.indexOf(x[2]),e:x[3]};}
+let QUIZ=[],qi=0,score=0;
+function startQuiz(){QUIZ=shuffle(QUIZ_RAW.map(prep));qi=0;score=0;renderQuiz();}
+function renderQuiz(){
+  const box=document.getElementById("quizbox");
+  if(qi>=QUIZ.length){
+    const pct=Math.round(score/QUIZ.length*100);
+    box.innerHTML=`<div class="score">Score: ${score} / ${QUIZ.length} (${pct}%)</div>
+      <p class="feedback">${pct>=80?"Excellent! You are ready for this topic in the exam.":pct>=60?"Good work. Revise the questions you missed, then retry.":"Keep practising. Use the loop stepper and the checker, then retry."}</p>
+      <div class="row" style="margin-top:12px"><button class="btn primary" id="restart">Restart quiz (reshuffled)</button></div>`;
+    document.getElementById("restart").onclick=startQuiz; return;
+  }
+  const Q=QUIZ[qi], pctDone=Math.round(qi/QUIZ.length*100);
+  box.innerHTML=`<div class="feedback">Question ${qi+1} of ${QUIZ.length} · Score ${score}</div>
+   <div class="bar" style="margin:8px 0 14px"><div style="width:${pctDone}%"></div></div>
+   <div class="q"><h4>${esc(Q.q)}</h4><div class="opts">
+     ${Q.o.map((x,i)=>`<button class="opt" data-i="${i}">${esc(x)}</button>`).join("")}
+   </div><div class="feedback" id="fb"></div>
+   <div class="row" style="margin-top:12px"><button class="btn primary" id="next" disabled>${qi===QUIZ.length-1?"See score":"Next →"}</button></div></div>`;
+  const opts=[...box.querySelectorAll(".opt")];
+  opts.forEach(b=>b.onclick=()=>{
+    const i=+b.dataset.i; opts.forEach(x=>x.disabled=true); opts[Q.a].classList.add("right");
+    if(i===Q.a)score++; else b.classList.add("wrong");
+    document.getElementById("fb").textContent=(i===Q.a?"✅ Correct. ":"❌ Not quite. ")+Q.e;
+    document.getElementById("next").disabled=false;
+  });
+  document.getElementById("next").onclick=()=>{qi++;renderQuiz();};
+}
+startQuiz();
+</script>
+</body>
+</html>
